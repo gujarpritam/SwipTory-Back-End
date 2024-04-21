@@ -42,4 +42,141 @@ const createStoryPost = async (req, res) => {
   }
 };
 
-module.exports = { createStoryPost };
+const getStories = async (req, res, next) => {
+  try {
+    const username = req.query.user || "";
+    const category = req.query.category;
+
+    console.log("username", username, "categ", category);
+
+    let storyDetails,
+      storyResult = [];
+
+    if (category !== "All") {
+      storyDetails = await Story.find({ category });
+      storyDetails.map((item) => {
+        let slide1 = item["slide1"];
+        storyResult.push({
+          id: item["_id"],
+          heading: slide1[0],
+          description: slide1[1],
+          imgUrl: slide1[2],
+          username: item["username"],
+        });
+      });
+
+      return res.json({
+        data: storyResult,
+        category: category,
+      });
+    }
+
+    let foodData, healthData, travelData, moviesData, educationData, userData;
+    let foodResult = [],
+      healthResult = [],
+      travelResult = [],
+      moviesResult = [],
+      educationResult = [],
+      userResult = [];
+
+    foodData = await Story.find({ category: "Food" });
+
+    foodData.map((item) => {
+      let slide1 = item["slide1"];
+      foodResult.push({
+        id: item["_id"],
+        heading: slide1[0],
+        description: slide1[1],
+        imgUrl: slide1[2],
+        username: item["username"],
+      });
+    });
+
+    healthData = await Story.find({ category: "Health and Fitness" });
+    healthData.map((item) => {
+      let slide1 = item["slide1"];
+      healthResult.push({
+        id: item["_id"],
+        heading: slide1[0],
+        description: slide1[1],
+        imgUrl: slide1[2],
+        username: item["username"],
+      });
+    });
+
+    travelData = await Story.find({ category: "Travel" });
+    travelData.map((item) => {
+      let slide1 = item["slide1"];
+      travelResult.push({
+        id: item["_id"],
+        heading: slide1[0],
+        description: slide1[1],
+        imgUrl: slide1[2],
+        username: item["username"],
+      });
+    });
+
+    moviesData = await Story.find({ category: "Movies" });
+    moviesData.map((item) => {
+      let slide1 = item["slide1"];
+      moviesResult.push({
+        id: item["_id"],
+        heading: slide1[0],
+        description: slide1[1],
+        imgUrl: slide1[2],
+        username: item["username"],
+      });
+    });
+
+    educationData = await Story.find({ category: "Education" });
+
+    educationData.map((item) => {
+      let slide1 = item["slide1"];
+      educationResult.push({
+        id: item["_id"],
+        heading: slide1[0],
+        description: slide1[1],
+        imgUrl: slide1[2],
+        username: item["username"],
+      });
+    });
+
+    console.log("edArr", educationResult);
+
+    if (username) {
+      userData = await Story.find({ username });
+
+      userData.map((item) => {
+        let slide1 = item["slide1"];
+        userResult.push({
+          id: item["_id"],
+          heading: slide1[0],
+          description: slide1[1],
+          imgUrl: slide1[2],
+          username: item["username"],
+        });
+      });
+    }
+
+    res.json({
+      data: [
+        foodResult,
+        healthResult,
+        travelResult,
+        moviesResult,
+        educationResult,
+        userResult,
+      ],
+      // user: userData,
+      // foodData: foodData,
+      // healthData: healthData,
+      // travelData: travelData,
+      // moviesData: moviesData,
+      // educationData: educationData,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createStoryPost, getStories };
