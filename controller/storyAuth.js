@@ -179,4 +179,24 @@ const getStories = async (req, res, next) => {
   }
 };
 
-module.exports = { createStoryPost, getStories };
+const getStory = async (req, res, next) => {
+  try {
+    const storyId = req.query.id || "";
+
+    const storyDetails = await Story.findById(storyId);
+
+    if (!storyDetails) {
+      return res.status(400).json({
+        message: "Bad request",
+      });
+    }
+
+    console.log("storyDetails ", storyDetails);
+
+    res.json({ data: storyDetails });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createStoryPost, getStories, getStory };
