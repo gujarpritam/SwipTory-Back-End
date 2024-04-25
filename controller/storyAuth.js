@@ -199,4 +199,75 @@ const getStory = async (req, res, next) => {
   }
 };
 
-module.exports = { createStoryPost, getStories, getStory };
+const updateStoryDetailsById = async (req, res, next) => {
+  try {
+    const storyId = req.query.id || "";
+    const userId = req.username;
+
+    console.log("storyId", storyId);
+    console.log("userId", userId);
+
+    if (!storyId) {
+      return res.status(400).json({
+        message: "Bad Request",
+      });
+    }
+
+    const isStoryExists = await Story.findOne({
+      _id: storyId,
+      username: userId,
+    });
+
+    console.log("isStoryExist", isStoryExists);
+
+    if (!isStoryExists) {
+      return res.status(400).json({
+        message: "Bad request",
+      });
+    }
+
+    const {
+      category,
+      slide1,
+      slide2,
+      slide3,
+      slide4,
+      slide5,
+      slide6,
+      username,
+    } = req.body;
+
+    if (!category || !username) {
+      return res.status(400).json({
+        message: "Bad Request",
+      });
+    }
+
+    await Story.updateOne(
+      { _id: storyId, username: userId },
+      {
+        $set: {
+          category,
+          slide1,
+          slide2,
+          slide3,
+          slide4,
+          slide5,
+          slide6,
+          username,
+        },
+      }
+    );
+
+    res.json({ message: "Story updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createStoryPost,
+  getStories,
+  getStory,
+  updateStoryDetailsById,
+};
