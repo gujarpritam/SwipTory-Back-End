@@ -28,6 +28,9 @@ const storySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    likedBy: {
+      type: Array,
+    },
   },
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );
