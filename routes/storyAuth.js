@@ -13,5 +13,12 @@ router.put(
   storyController.updateLikesOnStoryPost
 );
 router.get("/getLikes", storyController.getLikesOnStory);
+router.put(
+  "/update/bookmark",
+  verifyToken,
+  storyController.updateBookmarkOnStory
+);
+router.get("/getBookmark", storyController.getBookmarkOnStory);
+router.get("/get/bookmarks", storyController.getBookmarkedStories);
 
 module.exports = router;

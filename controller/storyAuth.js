@@ -33,6 +33,7 @@ const createStoryPost = async (req, res) => {
       slide6,
       username,
       likedBy: [],
+      bookmarkedBy: [],
     });
 
     await storyDetails.save();
@@ -306,23 +307,6 @@ const updateLikesOnStoryPost = async (req, res, next) => {
 
     console.log("likes", likes);
 
-    // const {
-    //   category,
-    //   slide1,
-    //   slide2,
-    //   slide3,
-    //   slide4,
-    //   slide5,
-    //   slide6,
-    //   username,
-    // } = req.body;
-
-    // if (!category || !username) {
-    //   return res.status(400).json({
-    //     message: "Bad Request",
-    //   });
-    // }
-
     await Story.updateOne(
       { _id: storyId },
       {
@@ -335,6 +319,7 @@ const updateLikesOnStoryPost = async (req, res, next) => {
           slide5: storyDetails?.slide5,
           slide6: storyDetails?.slide6,
           username: storyDetails?.username,
+          bookmarkedBy: storyDetails?.bookmarkedBy,
           likedBy: likes,
         },
       }
@@ -379,6 +364,134 @@ const getLikesOnStory = async (req, res, next) => {
   }
 };
 
+const updateBookmarkOnStory = async (req, res, next) => {
+  try {
+    const storyId = req.query.id || "";
+    const userId = req.username;
+    const bookmarkStatus = req.query.bookmarkStatus || "";
+
+    console.log("storyId", storyId);
+    console.log("userId", userId);
+
+    if (!storyId) {
+      return res.status(400).json({
+        message: "Bad Request",
+      });
+    }
+
+    const storyDetails = await Story.findOne({
+      _id: storyId,
+    });
+
+    console.log("storyDetails", storyDetails);
+
+    if (!storyDetails) {
+      return res.status(400).json({
+        message: "Bad request",
+      });
+    }
+
+    let bookmarks = storyDetails?.bookmarkedBy;
+
+    if (bookmarkStatus === "not-bookmarked") {
+      bookmarks.push(userId);
+    } else if (bookmarkStatus === "bookmarked") {
+      let result = bookmarks.filter((item) => {
+        return userId !== item;
+      });
+      bookmarks = result;
+    }
+
+    console.log("bookmarks", bookmarks);
+
+    await Story.updateOne(
+      { _id: storyId },
+      {
+        $set: {
+          category: storyDetails?.category,
+          slide1: storyDetails?.slide1,
+          slide2: storyDetails?.slide2,
+          slide3: storyDetails?.slide3,
+          slide4: storyDetails?.slide4,
+          slide5: storyDetails?.slide5,
+          slide6: storyDetails?.slide6,
+          username: storyDetails?.username,
+          likedBy: storyDetails?.likedBy,
+          bookmarkedBy: bookmarks,
+        },
+      }
+    );
+
+    res.json({ message: "Story updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getBookmarkOnStory = async (req, res, next) => {
+  try {
+    const storyId = req.query.id || "";
+    const userId = req.query.username || "";
+
+    const storyDetails = await Story.findById(storyId);
+
+    if (!storyDetails) {
+      return res.status(400).json({
+        message: "Bad request",
+      });
+    }
+
+    console.log("storyDetails ", storyDetails);
+    let bookmarks = storyDetails?.bookmarkedBy;
+
+    let result = bookmarks.filter((user) => {
+      return user === userId;
+    });
+    let isBookmarked;
+
+    if (result[0] === userId) {
+      isBookmarked = true;
+    } else {
+      isBookmarked = false;
+    }
+
+    res.json({ isBookmarked });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getBookmarkedStories = async (req, res, next) => {
+  try {
+    const username = req.query.user || "";
+
+    console.log("username", username);
+
+    let storyDetails,
+      storyResult = [];
+
+    storyDetails = await Story.find({ bookmarkedBy: username });
+
+    console.log("storyDetails", storyDetails);
+    storyDetails.map((item) => {
+      let slide1 = item["slide1"];
+      storyResult.push({
+        id: item["_id"],
+        heading: slide1[0],
+        description: slide1[1],
+        imgUrl: slide1[2],
+        username: item["username"],
+      });
+    });
+
+    return res.json({
+      data: storyResult,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createStoryPost,
   getStories,
@@ -386,4 +499,7 @@ module.exports = {
   updateStoryDetailsById,
   updateLikesOnStoryPost,
   getLikesOnStory,
+  updateBookmarkOnStory,
+  getBookmarkOnStory,
+  getBookmarkedStories,
 };
