@@ -1,6 +1,4 @@
 const Story = require("../models/story");
-// const { decodeJwtToken } = require("../middlewares/verifyToken");
-// const { ObjectId } = require("mongoose");
 
 const createStoryPost = async (req, res) => {
   try {
@@ -20,8 +18,6 @@ const createStoryPost = async (req, res) => {
         message: "Bad Request",
       });
     }
-
-    // const userId = req.userId;
 
     const storyDetails = new Story({
       category,
@@ -48,8 +44,6 @@ const getStories = async (req, res, next) => {
   try {
     const username = req.query.user || "";
     const category = req.query.category;
-
-    console.log("username", username, "categ", category);
 
     let storyDetails,
       storyResult = [];
@@ -143,8 +137,6 @@ const getStories = async (req, res, next) => {
       });
     });
 
-    console.log("edArr", educationResult);
-
     if (username) {
       userData = await Story.find({ username });
 
@@ -169,12 +161,6 @@ const getStories = async (req, res, next) => {
         educationResult,
         userResult,
       ],
-      // user: userData,
-      // foodData: foodData,
-      // healthData: healthData,
-      // travelData: travelData,
-      // moviesData: moviesData,
-      // educationData: educationData,
     });
   } catch (error) {
     next(error);
@@ -193,8 +179,6 @@ const getStory = async (req, res, next) => {
       });
     }
 
-    console.log("storyDetails ", storyDetails);
-
     res.json({ data: storyDetails });
   } catch (error) {
     next(error);
@@ -206,9 +190,6 @@ const updateStoryDetailsById = async (req, res, next) => {
     const storyId = req.query.id || "";
     const userId = req.username;
 
-    console.log("storyId", storyId);
-    console.log("userId", userId);
-
     if (!storyId) {
       return res.status(400).json({
         message: "Bad Request",
@@ -219,8 +200,6 @@ const updateStoryDetailsById = async (req, res, next) => {
       _id: storyId,
       username: userId,
     });
-
-    console.log("isStoryExist", isStoryExists);
 
     if (!isStoryExists) {
       return res.status(400).json({
@@ -273,9 +252,6 @@ const updateLikesOnStoryPost = async (req, res, next) => {
     const userId = req.username;
     const likeStatus = req.query.likeStatus || "";
 
-    console.log("storyId", storyId);
-    console.log("userId", userId);
-
     if (!storyId) {
       return res.status(400).json({
         message: "Bad Request",
@@ -285,8 +261,6 @@ const updateLikesOnStoryPost = async (req, res, next) => {
     const storyDetails = await Story.findOne({
       _id: storyId,
     });
-
-    console.log("storyDetails", storyDetails);
 
     if (!storyDetails) {
       return res.status(400).json({
@@ -304,8 +278,6 @@ const updateLikesOnStoryPost = async (req, res, next) => {
       });
       likes = result;
     }
-
-    console.log("likes", likes);
 
     await Story.updateOne(
       { _id: storyId },
@@ -344,7 +316,6 @@ const getLikesOnStory = async (req, res, next) => {
       });
     }
 
-    console.log("storyDetails ", storyDetails);
     let likes = storyDetails?.likedBy;
     let likesCount = likes.length;
     let result = likes.filter((user) => {
@@ -370,9 +341,6 @@ const updateBookmarkOnStory = async (req, res, next) => {
     const userId = req.username;
     const bookmarkStatus = req.query.bookmarkStatus || "";
 
-    console.log("storyId", storyId);
-    console.log("userId", userId);
-
     if (!storyId) {
       return res.status(400).json({
         message: "Bad Request",
@@ -382,8 +350,6 @@ const updateBookmarkOnStory = async (req, res, next) => {
     const storyDetails = await Story.findOne({
       _id: storyId,
     });
-
-    console.log("storyDetails", storyDetails);
 
     if (!storyDetails) {
       return res.status(400).json({
@@ -401,8 +367,6 @@ const updateBookmarkOnStory = async (req, res, next) => {
       });
       bookmarks = result;
     }
-
-    console.log("bookmarks", bookmarks);
 
     await Story.updateOne(
       { _id: storyId },
@@ -441,7 +405,6 @@ const getBookmarkOnStory = async (req, res, next) => {
       });
     }
 
-    console.log("storyDetails ", storyDetails);
     let bookmarks = storyDetails?.bookmarkedBy;
 
     let result = bookmarks.filter((user) => {
@@ -465,14 +428,11 @@ const getBookmarkedStories = async (req, res, next) => {
   try {
     const username = req.query.user || "";
 
-    console.log("username", username);
-
     let storyDetails,
       storyResult = [];
 
     storyDetails = await Story.find({ bookmarkedBy: username });
 
-    console.log("storyDetails", storyDetails);
     storyDetails.map((item) => {
       let slide1 = item["slide1"];
       storyResult.push({
