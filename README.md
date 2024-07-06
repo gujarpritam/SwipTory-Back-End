@@ -59,3 +59,6 @@
 
 # Share, like, bookmark option on Story
 ![share_like_bookmark](https://github.com/gujarpritam/SwipTory-Front-End/assets/139687074/13ad4a4a-a424-485e-919f-513384e5dadf)
+
+# When clicked on 1 of the 5 categories, stories related to that category are fetched 
+![Stories_of_particular_category](https://github.com/gujarpritam/SwipTory-Front-End/assets/139687074/e4d94b0c-2a2e-450c-87f7-81d594737120)
